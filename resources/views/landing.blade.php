@@ -19,18 +19,18 @@
             <p>Nikmati Proses dan keseruan bersama saya</p>
             <button id="ctaButton">Ayo ikut denganku!!</button>
         </section>
-
-        <!-- <section id="features">
+<!-- 
+        <section id="features">
             <h2>Fitur Utama</h2>
             <ul>
                 <li>Cepat dan Efisien</li>
                 <li>Desain Responsif</li>
                 <li>Mudah Digunakan</li>
             </ul>
-        </section>
+        </section> -->
 
         <section id="contact">
-            <h2>Hubungi Kami</h2>
+            <h2>Perkenalkan Dirimu</h2>
             {{-- Form tanpa action karena akan ditangani oleh JavaScript --}}
             <form id="contactForm">
                 @csrf {{-- Penting untuk keamanan Laravel --}}
@@ -44,10 +44,10 @@
     </main>
 
     <footer>
-        <p>&copy; 2023 Landing Page Sederhana Laravel</p>
+        <p>&copy; 2025 Landing Page Sederhana Laravel</p>
     </footer>
 
     {{-- Menggunakan asset() helper untuk JavaScript --}}
-    <script src="{{ asset('js/mainController.js') }}"></script> -->
+    <script src="{{ asset('js/mainController.js') }}"></script>
 </body>
 </html>

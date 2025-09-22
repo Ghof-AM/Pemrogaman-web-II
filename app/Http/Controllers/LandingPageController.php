@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Contact; // Import Model Contact yang baru dibuat
+use Illuminate\Support\Facades\Log; // Untuk logging
 
 class LandingPageController extends Controller
 {
@@ -13,32 +15,44 @@ class LandingPageController extends Controller
      */
     public function index()
     {
-        // Controller ini hanya bertugas menampilkan view.
-        // Tidak ada logika bisnis Model karena kita mengabaikannya.
         return view('landing');
     }
 
-    // /**
-    //  * Contoh metode untuk menangani submit form (opsional, jika ingin AJAX ke Laravel)
-    //  *
-    //  * @param  \Illuminate\Http\Request  $request
-    //  * @return \Illuminate\Http\JsonResponse
-    //  */
-    // public function submitContactForm(Request $request)
-    // {
-    //     // Ini adalah contoh bagaimana controller Laravel bisa menerima data
-    //     // jika Anda memutuskan untuk mengirim form via AJAX ke backend Laravel.
-    //     // Untuk saat ini, kita akan fokus pada penanganan di JavaScript saja.
+    /**
+     * Metode untuk menangani submit form kontak.
+     * Ini akan menerima data dari AJAX dan menyimpannya ke database.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function submitContactForm(Request $request)
+    {
+        // 1. Validasi data
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'message' => 'nullable|string',
+            // Pastikan Anda juga akan mengirim _token dari frontend jika menggunakan AJAX
+            '_token' => 'required', // Tambahkan validasi CSRF token
+        ]);
 
-    //     // Validasi data (opsional)
-    //     // $request->validate([
-    //     //     'name' => 'required|string|max:255',
-    //     //     'email' => 'required|email|max:255',
-    //     //     'message' => 'nullable|string',
-    //     // ]);
+        try {
+            // 2. Simpan data ke database menggunakan Model Contact
+            Contact::create([
+                'name' => $validatedData['name'],
+                'email' => $validatedData['email'],
+                'message' => $validatedData['message'],
+            ]);
 
-    //     // Lakukan sesuatu dengan data (misalnya, kirim email, simpan ke log)
-    //     \Log::info('Form contact submitted:', $request->all());
+            Log::info('Pesan kontak baru disimpan:', $validatedData);
 
-    //     return response()->json(['message' => 'Pesan Anda berhasil terkirim!']);
+            // 3. Beri respons sukses
+            return response()->json(['message' => 'Pesan Anda berhasil terkirim!'], 200);
+
+        } catch (\Exception $e) {
+            // 4. Tangani jika ada error saat penyimpanan
+            Log::error('Gagal menyimpan pesan kontak:', ['error' => $e->getMessage(), 'request' => $request->all()]);
+            return response()->json(['message' => 'Terjadi kesalahan saat mengirim pesan. Silakan coba lagi.'], 500);
+        }
     }
+}
